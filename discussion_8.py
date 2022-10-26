@@ -6,12 +6,30 @@ import unittest
 # search for the url in the University of Michgian wikipedia page (in the third pargraph of the intro)
 # HINT: You will have to add https://en.wikipedia.org to the URL retrieved using BeautifulSoup
 def getLink(soup):
-    
+    #.find because only looking for one instance 
+  
+    webpage = soup.find('a', title = "List of American universities with Olympic medals")
+    url = webpage.get("href")
+    return "https://en.wikipedia.org" + url 
+
     pass
 
 # Task 3: Get the details from the box titled "College/school founding". Get all the college/school names and the year they were
 # founded and organize the same into key-value pairs.
 def getAdmissionsInfo2019(soup):
+    table_tag = soup.find('table', class_ = "toccolours")
+    tr_list = table_tag.find_all('tr')
+    dict = {}
+    for tr_tag in tr_list[1:]:
+        td_list = tr_tag.find_all('td')
+        school_name = td_list[0].text.strip()
+        found_year = td_list[1].text.strip()
+        dict[school_name] = found_year
+    return dict 
+
+    
+    
+
 
     pass
 
@@ -19,8 +37,9 @@ def getAdmissionsInfo2019(soup):
 
 def main():
     # Task 1: Create a BeautifulSoup object and name it soup. Refer to discussion slides or lecture slides to complete this
-
-    #### YOUR CODE HERE####
+    url = "https://en.wikipedia.org/wiki/University_of_Michigan"
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
 
     #Call the functions getLink(soup) and getAdmissionsInfo2019(soup) on your soup object.
     getLink(soup)
@@ -34,7 +53,7 @@ class TestAllMethods(unittest.TestCase):
         self.assertEqual(getLink(self.soup), 'https://en.wikipedia.org/wiki/List_of_American_universities_with_Olympic_medals')
 
     def test_admissions_info(self):
-        self.assertEqual(getAdmissionsInfo2019(self.soup), {'Engineering': '1854', 
+        self.assertEqual(getAdmissionsInfo2019(self.soup), {'Literature, Science, andthe Arts': '1841', 'Medicine': '1850', 'Engineering': '1854', 
                                                             'Law': '1859',
                                                             'Dentistry': '1875', 
                                                             'Pharmacy': '1876', 
@@ -54,3 +73,4 @@ class TestAllMethods(unittest.TestCase):
 if __name__ == "__main__":
     main()
     unittest.main(verbosity = 2)
+ 
